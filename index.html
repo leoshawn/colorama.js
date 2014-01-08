@@ -3,6 +3,13 @@
   <head>
     <title>Colorama</title>
     <script src="bundle.js"></script>
+    <script>
+      var c = Colorama('#123456');
+      var triad = c.triad();
+      for (var i=0; i<triad.length; i++) {
+        console.log(triad[i].hsl());
+      }
+    </script>
   </head>
   <body>
   </body>
