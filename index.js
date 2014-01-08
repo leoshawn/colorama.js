@@ -1,0 +1,1 @@
+Colorama = require("./lib/colorama");
