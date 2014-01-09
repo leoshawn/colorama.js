@@ -1,1 +1,1 @@
-Colorama = require("./lib/colorama");
+Colorama = module.exports = require("./lib/colorama");
