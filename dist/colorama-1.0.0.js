@@ -35,6 +35,7 @@ module.exports = function(color) {
  */
 function Colorama(color) {
   this.attributes = {
+    hex: '000000',
     rgb: [0, 0, 0],
     hsl: [0, 0, 0],
     hsv: [0, 0, 0]
@@ -67,6 +68,9 @@ Colorama.prototype = {
    * Methods for getting or setting all values in a color type, e.g.
    * rgb([20, 30, 40]).
    */
+  hex: function(color) {
+    return this.set('hex', color);
+  },
   rgb: function(color) {
     return this.set('rgb', color);
   },
@@ -81,6 +85,10 @@ Colorama.prototype = {
    * Methods for getting or setting string versions of color types, e.g.
    * 'rgb(20, 30, 40)'.
    */
+  hexString: function() {
+    var hex = this.get('hex');
+    return '#' + hex;
+  },
   rgbString: function() {
     var rgb = this.get('rgb');
     return 'rgb(' + rgb.r + ', ' + rgb.g + ', ' + rgb.b + ')';
