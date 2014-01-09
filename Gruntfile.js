@@ -9,11 +9,11 @@ module.exports = function(grunt) {
 
     uglify: {
       options: {
-        banner: '/*\nColorama v<%= pkg.version %>.\n\n' + grunt.file.read('LICENSE') + '\n*/\n'
+        banner: '/*\nColorama v<%= pkg.version %>\n\n' + grunt.file.read('LICENSE') + '\n*/\n'
       },
       dist: {
         files: {
-          'dist/colorama.min.js': ['dist/colorama.js']
+          'dist/colorama.<%= pkg.version %>.min.js': ['dist/colorama.<%= pkg.version %>.js']
         }
       }
     }
@@ -21,10 +21,10 @@ module.exports = function(grunt) {
 
   grunt.registerTask('browserify', 'build a browser file', function() {
     var done = this.async();
-    var outfile = './dist/colorama.js';
+    var outfile = './dist/colorama.' + pkg.version + '.js';
     var bundle = browserify('./index.js').bundle(function(err, src) {
       console.log('> ' + outfile);
-      fs.writeFileSync(outfile, src);
+      fs.writeFileSync(outfile, '/*\nColorama v' + pkg.version + '\n\n' + grunt.file.read('LICENSE') + '\n*/\n' + src);
       done();
     });
   });
