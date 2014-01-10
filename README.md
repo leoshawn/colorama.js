@@ -2,15 +2,17 @@
 
 Colorama.js was created after a real need for a simpler API greater control over the colors you define and a need for greater functionality such as color palettes and conversions.
 
-## Defining a color
+# Installation
 
-Defining a new color is as easy as:
+Install colorama.js by either forking this repository or installing through [npm](http://npmjs.org/) (recommended).
 
-```javascript
-var red = colorama('#ff0000');
-```
+    npm install colorama
+    
+You can also use colorama.js from directly within the browser. Simply include the `colorama.*.js` or `colorama.*.min.js` file and get coding!
+    
+# Usage
 
-You also have several options when you define a color, such as:
+A colorama object is required to manipulate or convert a color. Defining a new colorama object is easy, and you can do it in a number of ways:
 
 ```javascript
 colorama("red");
@@ -23,3 +25,4 @@ colorama("rgb(255, 0, 0)");
 colorama("rgb(100%, 0%, 0%)");
 colorama("hsl(0, 100%, 50%)");
 ```
+
