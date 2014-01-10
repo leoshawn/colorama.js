@@ -25,6 +25,8 @@ Colorama = module.exports = require("./lib/colorama");
 },{"./lib/colorama":2}],2:[function(require,module,exports){
 'use strict';
 
+var conversions = require('./conversions');
+
 module.exports = function(color) {
   return new Colorama(color);
 };
@@ -42,21 +44,21 @@ function Colorama(color) {
   };
   switch (typeof color) {
   case 'string':
-    if (this.parseHex(color)) {
-      this.set('rgb', this.parseHex(color));
-    } else if (this.parseRgb(color)) {
-      this.set('rgb', this.parseRgb(color));
+    if (this._parseHex(color)) {
+      this._set('rgb', this._parseHex(color));
+    } else if (this._parseRgb(color)) {
+      this._set('rgb', this._parseRgb(color));
     } else {
-      this.set('hsl', this.parseHsl(color));
+      this._set('hsl', this._parseHsl(color));
     }
     return this;
   case 'object':
     if (color.r || color.red) {
-      this.set('rgb', color);
+      this._set('rgb', color);
     } else if (color.l || color.lightness) {
-      this.set('hsl', color);
+      this._set('hsl', color);
     } else if (color.v || color.value) {
-      this.set('hsv', color);
+      this._set('hsv', color);
     }
     return this;
   }
@@ -69,65 +71,66 @@ Colorama.prototype = {
    * rgb([20, 30, 40]).
    */
   hex: function(color) {
-    return this.set('hex', color);
+    return this._set('hex', color);
   },
   rgb: function(color) {
-    return this.set('rgb', color);
+    return this._set('rgb', color);
   },
   hsl: function(color) {
-    return this.set('hsl', color);
+    return this._set('hsl', color);
   },
   hsv: function(color) {
-    return this.set('hsv', color);
+    return this._set('hsv', color);
   },
 
   /*
    * Methods for getting or setting string versions of color types, e.g.
    * 'rgb(20, 30, 40)'.
    */
-  hexString: function() {
-    var hex = this.get('hex');
-    return '#' + hex;
-  },
-  rgbString: function() {
-    var rgb = this.get('rgb');
-    return 'rgb(' + rgb.r + ', ' + rgb.g + ', ' + rgb.b + ')';
-  },
-  hslString: function() {
-    var hsl = this.get('hsl');
-    return 'hsl(' + hsl.h + ', ' + hsl.s + '%, ' + hsl.l + '%)';
-  },
-  hsvString: function() {
-    var hsv = this.get('hsv');
-    return 'hsv(' + hsv.h + ', ' + hsv.s + '%, ' + hsv.v + '%)';
+  string: function(format) {
+    if (format === undefined) {
+      format = 'rgb';
+    }
+    var color = this._get(format);
+    switch (format) {
+    case 'hex':
+      return '#' + color;
+    case 'rgb':
+      return 'rgb(' + color.r + ', ' + color.g + ', ' + color.b + ')';
+    case 'hsl':
+      return 'hsl(' + color.h + ', ' + color.s + '%, ' + color.l + '%)';
+    case 'hsv':
+      return 'hsv(' + color.h + ', ' + color.s + '%, ' + color.v + '%)';
+    }
+    return false;
   },
 
   /*
    * Methods for getting and setting color channel values.
    */
   red: function(value) {
-    return this.setChannel('rgb', 0, value);
+    return this._setChannel('rgb', 0, value);
   },
   green: function(value) {
-    return this.setChannel('rgb', 1, value);
+    return this._setChannel('rgb', 1, value);
   },
   blue: function(value) {
-    return this.setChannel('rgb', 2, value);
+    return this._setChannel('rgb', 2, value);
   },
   hue: function(value) {
-    return this.setChannel('hsl', 0, value);
+    return this._setChannel('hsl', 0, value);
   },
   saturation: function(value) {
-    return this.setChannel('hsl', 1, value);
+    return this._setChannel('hsl', 1, value);
   },
   lightness: function(value) {
-    return this.setChannel('hsl', 2, value);
+    return this._setChannel('hsl', 2, value);
   },
   saturationv: function(value) {
-    return this.setChannel('hsv', 1, value);
+    return this._setChannel('hsv', 1, value);
   },
   value: function(value) {
-    return this.setChannel('hsv', 2, value);
+    return this._setChannel('hsv', 2, value);
   },
 
   /*
@@ -139,27 +142,27 @@ Colorama.prototype = {
     for (i = 0; i < 3; i++) {
       rgb[i] = 255 - this.attributes.rgb[i];
     }
-    this.set('rgb', rgb);
+    this._set('rgb', rgb);
     return this;
   },
   lighten: function(ratio) {
-    this.attributes.hsl[2] += this.attributes.hsl[2] * ratio;
-    this.set('hsl', this.attributes.hsl);
+    this.attributes.hsl[2] += this.attributes.hsl[2] * (ratio || 0.5);
+    this._set('hsl', this.attributes.hsl);
     return this;
   },
   darken: function(ratio) {
-    this.attributes.hsl[2] -= this.attributes.hsl[2] * ratio;
-    this.set('hsl', this.attributes.hsl);
+    this.attributes.hsl[2] -= this.attributes.hsl[2] * (ratio || 0.5);
+    this._set('hsl', this.attributes.hsl);
     return this;
   },
   saturate: function(ratio) {
-    this.attributes.hsl[1] += this.attributes.hsl[1] * ratio;
-    this.set('hsl', this.attributes.hsl);
+    this.attributes.hsl[1] += this.attributes.hsl[1] * (ratio || 0.5);
+    this._set('hsl', this.attributes.hsl);
     return this;
   },
   desaturate: function(ratio) {
-    this.attributes.hsl[1] -= this.attributes.hsl[1] * ratio;
-    this.set('hsl', this.attributes.hsl);
+    this.attributes.hsl[1] -= this.attributes.hsl[1] * (ratio || 0.5);
+    this._set('hsl', this.attributes.hsl);
     return this;
   },
   greyscale: function() {
@@ -181,9 +184,12 @@ Colorama.prototype = {
   /*
    * Get the color's value based on a color type.
    */
-  get: function(key) {
+  _get: function(key) {
     var values = {},
         i;
+    if (typeof this.attributes[key] === 'string') {
+      return this.attributes[key];
+    }
     for (i = 0; i < key.length; i++) {
       values[key[i]] = this.attributes[key][i];
     }
@@ -197,10 +203,10 @@ Colorama.prototype = {
    * set the current color's 'rgb' attribute to [20, 30, 40], and then will
    * proceed to convert and store the value in 'hsl' and 'hsv' formats.
    */
-  set: function(key, value) {
+  _set: function(key, value) {
     // Return existing value if value is not specified (getter).
     if (value === undefined) {
-      return this.get(key);
+      return this._get(key);
     }
     var keys = {
       'rgb': ['red', 'green', 'blue'],
@@ -213,7 +219,10 @@ Colorama.prototype = {
       'hsv': [360, 100, 100]
     };
     var i;
-    if (value.length) { // Array
+    if (typeof value === 'string') { // Hex
+      this.attributes[key] = value;
+    } else if (value.length) { // Array
+      console.log(value);
       this.attributes[key] = value.slice(0, key.length);
     } else if (value[key[0]] !== undefined) { // Object, e.g. { r: 255, g: 255, b: 255 }.
       for (i = 0; i < key.length; i++) {
@@ -229,15 +238,15 @@ Colorama.prototype = {
       if (keys.hasOwnProperty(keyName)) {
         if (keyName !== key) {
           // Bit of a hack. Converts to specific formats with the conversion methods.
-          if (typeof this[key + '2' + keyName] === 'function') {
-            this.attributes[keyName] = this[key + '2' + keyName](this.attributes[key]);
+          if (typeof conversions[key + '2' + keyName] === 'function') {
+            this.attributes[keyName] = conversions[key + '2' + keyName](this.attributes[key]);
           } else {
-            this.attributes[keyName] = this[keyName + '2' + key](this.attributes[key]);
+            this.attributes[keyName] = conversions[keyName + '2' + key](this.attributes[key]);
           }
         }
         // Ensure values don't exceed upper limit.
         for (i = 0; i < keyName.length; i++) {
-          var limited = this.scale(this.attributes[keyName][i], 0, max[keyName][i]);
+          var limited = this._scale(this.attributes[keyName][i], 0, max[keyName][i]);
           this.attributes[keyName][i] = Math.round(limited);
         }
       }
@@ -249,20 +258,20 @@ Colorama.prototype = {
    * Sets a color channel with a specific value. This function then proceeds to
    * update all of the other color formats to reflect the new color.
    */
-  setChannel: function(key, index, value) {
+  _setChannel: function(key, index, value) {
     // Return existing value if value is not specified (getter).
     if (value === undefined) {
       return this.attributes[key][index];
     }
     this.attributes[key][index] = value;
-    this.set(key, this.attributes[key]);
+    this._set(key, this.attributes[key]);
     return this;
   },
 
   /*
    * Methods used for parsing colors in string form. E.g. 'rgb(20, 30, 40)'.
    */
-  parseHex: function(color) {
+  _parseHex: function(color) {
     if (!color) {
       return;
     }
@@ -285,12 +294,12 @@ Colorama.prototype = {
     }
     if (rgb) {
       for (i = 0; i < rgb.length; i++) {
-        rgb[i] = this.scale(rgb[i], 0, 255);
+        rgb[i] = this._scale(rgb[i], 0, 255);
       }
     }
     return rgb;
   },
-  parseRgb: function(color) {
+  _parseRgb: function(color) {
     if (!color) {
       return;
     }
@@ -306,20 +315,20 @@ Colorama.prototype = {
     }
     if (rgb) {
       for (i = 0; i < rgb.length; i++) {
-        rgb[i] = this.scale(rgb[i], 0, 255);
+        rgb[i] = this._scale(rgb[i], 0, 255);
       }
     }
     return rgb;
   },
-  parseHsl: function(color) {
+  _parseHsl: function(color) {
     if (!color) {
       return;
     }
     var hslMatch = color.match(/^hsla?\(\s*(\d+)\s*,\s*([\d\.]+)%\s*,\s*([\d\.]+)%\s*(?:,\s*([\d\.]+)\s*)?\)/);
     if (hslMatch) {
-      var h = this.scale(parseInt(hslMatch[1], 10), 0, 360),
-          s = this.scale(parseFloat(hslMatch[2]), 0, 100),
-          l = this.scale(parseFloat(hslMatch[3]), 0, 100);
+      var h = this._scale(parseInt(hslMatch[1], 10), 0, 360),
+          s = this._scale(parseFloat(hslMatch[2]), 0, 100),
+          l = this._scale(parseFloat(hslMatch[3]), 0, 100);
       return [h, s, l];
     }
     return null;
@@ -330,7 +339,7 @@ Colorama.prototype = {
    * creating palettes and using related colors.
    */
   triad: function() {
-    var hsl = this.get('hsl');
+    var hsl = this._get('hsl');
     return [
       new Colorama(hsl),
       new Colorama({ h: (hsl.h + 120) % 360, s: hsl.s, l: hsl.l }),
@@ -338,7 +347,7 @@ Colorama.prototype = {
     ];
   },
   tetrad: function() {
-    var hsl = this.get('hsl');
+    var hsl = this._get('hsl');
     return [
       new Colorama(hsl),
       new Colorama({ h: (hsl.h + 90) % 360, s: hsl.s, l: hsl.l }),
@@ -347,7 +356,7 @@ Colorama.prototype = {
     ];
   },
   splitComplement: function() {
-    var hsl = this.get('hsl');
+    var hsl = this._get('hsl');
     return [
       new Colorama(hsl),
       new Colorama({ h: (hsl.h + 72) % 360, s: hsl.s, l: hsl.l }),
@@ -357,7 +366,7 @@ Colorama.prototype = {
   analogous: function(results, slices) {
     results = results || 6;
     slices = slices || 30;
-    var hsl = this.get('hsl'),
+    var hsl = this._get('hsl'),
         array = [new Colorama(hsl)];
     for (hsl.h = ((hsl.h - ((360 / slices) * results >> 1)) + 720) % 360; --results;) {
       hsl.h = (hsl.h + (360 / slices)) % 360;
@@ -368,7 +377,7 @@ Colorama.prototype = {
   // TODO
   monochromatic: function(results) {
     results = results || 6;
-    var hsv = this.get('hsv');
+    var hsv = this._get('hsv');
     var h = hsv.h, s = hsv.s, v = hsv.v;
     var array = [];
     var modification = 1 / results;
@@ -379,6 +388,17 @@ Colorama.prototype = {
     return array;
   },
 
+  /*
+   * Utility methods.
+   */
+  _scale: function(num, min, max) {
+    return Math.min(Math.max(min, num), max);
+  }
+};
+},{"./conversions":3}],3:[function(require,module,exports){
+'use strict';
+
+module.exports = {
   /*
    * Methods to convert a specified color into a different format.
    */
@@ -521,13 +541,6 @@ Colorama.prototype = {
     sl /= (l <= 1) ? l : 2 - l;
     l /= 2;
     return [h, sl * 100, l * 100];
-  },
-
-  /*
-   * Utility methods.
-   */
-  scale: function(num, min, max) {
-    return Math.min(Math.max(min, num), max);
   }
 };
 },{}]},{},[1])
