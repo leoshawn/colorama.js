@@ -45,7 +45,7 @@ function Colorama(color) {
   switch (typeof color) {
   case 'string':
     if (this._parseHex(color)) {
-      this._set('rgb', this._parseHex(color));
+      this._set('hex', this._parseHex(color));
     } else if (this._parseRgb(color)) {
       this._set('rgb', this._parseRgb(color));
     } else {
@@ -208,34 +208,24 @@ Colorama.prototype = {
     if (value === undefined) {
       return this._get(key);
     }
-    var keys = {
-      'rgb': ['red', 'green', 'blue'],
-      'hsl': ['hue', 'saturation', 'lightness'],
-      'hsv': ['hue', 'saturation', 'value']
-    };
     var max = {
       'rgb': [255, 255, 255],
       'hsl': [360, 100, 100],
       'hsv': [360, 100, 100]
     };
     var i;
-    if (typeof value === 'string') { // Hex
+    if (typeof value === 'string') {
+      value = value.replace(/\b\#\w+/g, ''); // Remove # from hex string.
       this.attributes[key] = value;
-    } else if (value.length) { // Array
-      console.log(value);
+    } else if (value.length) {
       this.attributes[key] = value.slice(0, key.length);
     } else if (value[key[0]] !== undefined) { // Object, e.g. { r: 255, g: 255, b: 255 }.
       for (i = 0; i < key.length; i++) {
         this.attributes[key][i] = value[key[i]];
       }
-    } else if (value[keys[key][0]] !== undefined) { // Object, e.g. { red: 255, green: 255, blue: 255 }.
-      var channels = keys[key];
-      for (i = 0; i < key.length; i++) {
-        this.attributes[key][i] = value[channels[i]];
-      }
     }
-    for (var keyName in keys) {
-      if (keys.hasOwnProperty(keyName)) {
+    for (var keyName in max) {
+      if (max.hasOwnProperty(keyName)) {
         if (keyName !== key) {
           // Bit of a hack. Converts to specific formats with the conversion methods.
           if (typeof conversions[key + '2' + keyName] === 'function') {
@@ -275,9 +265,10 @@ Colorama.prototype = {
     if (!color) {
       return;
     }
+    color = color.replace('#', '');
     var rgb = [0, 0, 0],
-        hexShortMatch = color.match(/^#([a-fA-F0-9]{3})$/),
-        hexMatch = color.match(/^#([a-fA-F0-9]{6})$/),
+        hexShortMatch = color.match(/^([a-fA-F0-9]{3})$/),
+        hexMatch = color.match(/^([a-fA-F0-9]{6})$/),
         i;
     if (hexShortMatch) {
       hexShortMatch = hexShortMatch[1];
@@ -393,6 +384,9 @@ Colorama.prototype = {
    */
   _scale: function(num, min, max) {
     return Math.min(Math.max(min, num), max);
+  },
+  clone: function() {
+    return new Colorama(this.hex());
   }
 };
 },{"./conversions":3}],3:[function(require,module,exports){
