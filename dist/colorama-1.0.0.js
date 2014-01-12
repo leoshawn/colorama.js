@@ -25,8 +25,6 @@ Colorama = module.exports = require("./lib/colorama");
 },{"./lib/colorama":2}],2:[function(require,module,exports){
 'use strict';
 
-var conversions = require('./conversions');
-
 module.exports = function(color) {
   return new Colorama(color);
 };
@@ -40,6 +38,7 @@ function Colorama(color) {
   this.formats = ['hex', 'rgb', 'hsl', 'hsv'];
   switch (typeof color) {
   case 'string':
+    // No need to parse hex color as it is already a string.
     if (conversions.hexToRgb(color)) {
       this._set('hex', color);
     } else if (this._parseRgb(color)) {
@@ -71,7 +70,7 @@ Colorama.prototype = {
     throw new Error('Invalid color format specified.');
   },
 
-  // Accepts either string or object
+  // Accepts either string (hex) or object
   _set: function(key, value) {
     if (this.formats.indexOf(key) !== -1) {
       if (value === undefined) {
@@ -93,10 +92,8 @@ Colorama.prototype = {
     return this.rgb;
   }
 };
-},{"./conversions":3}],3:[function(require,module,exports){
-'use strict';
 
-module.exports = {
+var conversions = {
   hexToRgb: function(color) {
     if (color === undefined) {
       return;
@@ -112,6 +109,62 @@ module.exports = {
       return { r: r, g: g, b: b };
     }
     throw new Error('Invalid hex color specified.');
+  },
+  hsvToRgb: function(color) {
+    if (color === undefined) {
+      return;
+    }
+    var rgb = {},
+        var_r,
+        var_g,
+        var_b;
+    color.h = color.h / 360;
+    if (color.s === 0) {
+      rgb['r'] = color.v * 255;
+      rgb['g'] = color.v * 255;
+      rgb['b'] = color.v * 255;
+    } else {
+      var var_h = color.h * 6;
+      if (var_h === 6) {
+        var_h = 0;
+      }
+      var var_i = parseInt(var_h);
+      var var_1 = color.v * (1 - color.s);
+      var var_2 = color.v * (1 - color.s * (var_h - var_i));
+      var var_3 = color.v * (1 - color.s * (1 - (var_h - var_i)));
+      if (var_i == 0) {
+        var_r = color.v;
+        var_g = var_3;
+        var_b = var_1;
+      } else if (var_i === 1) {
+        var_r = var_2;
+        var_g = color.v;
+        var_b = var_1;
+      } else if (var_i === 2) {
+        var_r = var_1;
+        var_g = color.v;
+        var_b = var_3;
+      } else if (var_i === 3) {
+        var_r = var_1;
+        var_g = var_2;
+        var_b = color.v;
+      } else if (var_i === 4) {
+        var_r = var_3;
+        var_g = var_1;
+        var_b = color.v
+      } else {
+        var_r = color.v;
+        var_g = var_1;
+        var_b = var_2;
+      }
+      rgb['r'] = Math.round(var_r * 255);
+      rgb['g'] = Math.round(var_g * 255);
+      rgb['b'] = Math.round(var_b * 255);
+    }
+    rgb.r = Math.round(rgb.r);
+    rgb.g = Math.round(rgb.g);
+    rgb.b = Math.round(rgb.b);
+    return rgb;
   }
 };
 },{}]},{},[1])
