@@ -38,13 +38,10 @@ function Colorama(color) {
   this.formats = ['hex', 'rgb', 'hsl', 'hsv'];
   switch (typeof color) {
   case 'string':
-    // No need to parse hex color as it is already a string.
-    if (conversions.hexToRgb(color)) {
-      this._set('hex', color);
-    } else if (this._parseRgb(color)) {
-      this._set('rgb', this._parseRgb(color));
+    if (this._parseHexString(color)) {
+      this._set('hex', this._parseHexString(color));
     } else {
-      this._set('hsl', this._parseHsl(color));
+      return new Error('No valid color was provided.');
     }
     return this;
   case 'object':
@@ -54,10 +51,11 @@ function Colorama(color) {
       this._set('hsl', color);
     } else if (color.v || color.value) {
       this._set('hsv', color);
+    } else {
+      return new Error('No valid color was provided.');
     }
     return this;
   }
-  return null;
 }
 
 Colorama.prototype = {
@@ -82,6 +80,60 @@ Colorama.prototype = {
       return true;
     }
     throw new Error('Invalid color format specified.');
+  },
+
+  _parseHexString: function(color) {
+    if (!color) {
+      return;
+    }
+
+    var match = color.match(/^#?(([0-9a-fA-F]{2}){3}|([0-9a-fA-F]){3})$/);
+    if (match) {
+      console.log('hmm');
+      return match[1];
+    }
+    return false;
+  },
+  _parseRgbString: function(color) {
+    if (!color) {
+      return;
+    }
+    var rgb = {
+      r: 0,
+      g: 0,
+      b: 0
+    };
+    var match = color.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d\.]+)\s*)?\)$/),
+        i;
+    if (match) {
+      for (i = 0; i < rgb.length; i++) {
+        rgb[i] = parseInt(match[i + 1], 10);
+      }
+    } else {
+      rgb = null;
+    }
+    if (rgb) {
+      for (i = 0; i < rgb.length; i++) {
+        rgb[i] = this._scale(rgb[i], 0, 255);
+      }
+    }
+    return rgb;
+  },
+  _parseHslString: function(color) {
+    if (!color) {
+      return;
+    }
+    var hslMatch = color.match(/^hsla?\(\s*(\d+)\s*,\s*([\d\.]+)%\s*,\s*([\d\.]+)%\s*(?:,\s*([\d\.]+)\s*)?\)/);
+    if (hslMatch) {
+      var h = this._scale(parseInt(hslMatch[1], 10), 0, 360),
+          s = this._scale(parseFloat(hslMatch[2]), 0, 100),
+          l = this._scale(parseFloat(hslMatch[3]), 0, 100);
+      return { h: h, s: s, l: l };
+    }
+    return null;
+  },
+  _parseHsvString: function(color) {
+    return color;
   },
 
   _scale: function(num, min, max) {
@@ -110,61 +162,63 @@ var conversions = {
     }
     throw new Error('Invalid hex color specified.');
   },
-  hsvToRgb: function(color) {
-    if (color === undefined) {
-      return;
+  hslToRgb: function(color) {
+    var h = color.h / 360,
+        s = color.s / 100,
+        l = color.l / 100,
+        t1, t2, t3, rgb, val, i;
+    if (s === 0) {
+      val = l * 255;
+      return [val, val, val];
     }
-    var rgb = {},
-        var_r,
-        var_g,
-        var_b;
-    color.h = color.h / 360;
-    if (color.s === 0) {
-      rgb['r'] = color.v * 255;
-      rgb['g'] = color.v * 255;
-      rgb['b'] = color.v * 255;
+    if (l < 0.5) {
+      t2 = l * (1 + s);
     } else {
-      var var_h = color.h * 6;
-      if (var_h === 6) {
-        var_h = 0;
-      }
-      var var_i = parseInt(var_h);
-      var var_1 = color.v * (1 - color.s);
-      var var_2 = color.v * (1 - color.s * (var_h - var_i));
-      var var_3 = color.v * (1 - color.s * (1 - (var_h - var_i)));
-      if (var_i == 0) {
-        var_r = color.v;
-        var_g = var_3;
-        var_b = var_1;
-      } else if (var_i === 1) {
-        var_r = var_2;
-        var_g = color.v;
-        var_b = var_1;
-      } else if (var_i === 2) {
-        var_r = var_1;
-        var_g = color.v;
-        var_b = var_3;
-      } else if (var_i === 3) {
-        var_r = var_1;
-        var_g = var_2;
-        var_b = color.v;
-      } else if (var_i === 4) {
-        var_r = var_3;
-        var_g = var_1;
-        var_b = color.v
-      } else {
-        var_r = color.v;
-        var_g = var_1;
-        var_b = var_2;
-      }
-      rgb['r'] = Math.round(var_r * 255);
-      rgb['g'] = Math.round(var_g * 255);
-      rgb['b'] = Math.round(var_b * 255);
+      t2 = l + s - l * s;
     }
-    rgb.r = Math.round(rgb.r);
-    rgb.g = Math.round(rgb.g);
-    rgb.b = Math.round(rgb.b);
+    t1 = 2 * l - t2;
+    rgb = [0, 0, 0];
+    for (i = 0; i < 3; i++) {
+      t3 = h + 1 / 3 * - (i - 1);
+      t3 < 0 && t3++;
+      t3 > 1 && t3--;
+      if (6 * t3 < 1) {
+        val = t1 + (t2 - t1) * 6 * t3;
+      } else if (2 * t3 < 1) {
+        val = t2;
+      } else if (3 * t3 < 2) {
+        val = t1 + (t2 - t1) * (2 / 3 - t3) * 6;
+      } else {
+        val = t1;
+      }
+      rgb[i] = val * 255;
+    }
     return rgb;
+  },
+  hsvToRgb: function(color) {
+    var h = color.h / 60,
+        s = color.s / 100,
+        v = color.v / 100,
+        hi = Math.floor(h) % 6,
+        f = h - Math.floor(h),
+        p = 255 * v * (1 - s),
+        q = 255 * v * (1 - (s * f)),
+        t = 255 * v * (1 - (s * (1 - f)));
+    v = 255 * v;
+    switch(hi) {
+    case 0:
+      return { r: v, g: t, b: p };
+    case 1:
+      return { r: q, g: v, b: p };
+    case 2:
+      return { r: p, g: v, b: t };
+    case 3:
+      return { r: p, g: q, b: v };
+    case 4:
+      return { r: t, g: p, b: v };
+    case 5:
+      return { r: v, g: p, b: q };
+    }
   }
 };
 },{}]},{},[1])
