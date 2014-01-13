@@ -19,14 +19,25 @@
     <div id="four"></div>
     <div id="five"></div>
     <script>
-      var c = Colorama('#1d96ea');
-      document.getElementById('one').style.backgroundColor = c.string('rgb');
+      var c = Colorama('#00ff88');
+      var one = document.getElementById('one');
+      var two = document.getElementById('two');
+      var three = document.getElementById('three');
+      var four = document.getElementById('four');
+      var five = document.getElementById('five');
+      var six = document.getElementById('six');
+      var divs = [one, two, three, four, five, six];
+      var triad = c.triad();
+      var tetrad = c.tetrad();
+      var splitComplement = c.splitComplement();
+      var analogous = c.analogous();
+      var monochromatic = c.monochromatic();
 
-      //c.greyscale();
-      document.getElementById('two').style.backgroundColor = c.string('rgb');
-
-      //c.darken(0.5);
-      document.getElementById('three').style.backgroundColor = c.string('rgb');
+      //for (var i = 0; i < 3; i++) { divs[i].style.backgroundColor = triad[i].css(); }
+      //for (var i = 0; i < 4; i++) { divs[i].style.backgroundColor = tetrad[i].css(); }
+      //for (var i = 0; i < 3; i++) { divs[i].style.backgroundColor = splitComplement[i].css(); }
+      //for (var i = 0; i < 6; i++) { divs[i].style.backgroundColor = analogous[i].css(); }
+      for (var i = 0; i < 6; i++) { divs[i].style.backgroundColor = monochromatic[i].css(); }
     </script>
   </body>
 </html>
