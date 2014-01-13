@@ -131,6 +131,53 @@ Colorama.prototype = {
   },
 
   /*
+   * Methods for manipulating a color. These methods can also be chained, but
+   * remember: some of the following implementations modify the existing color.
+   * E.g. using c.negate() will set the values of c to the negation of the
+   * original color.
+   *
+   * This does mean that you can write c.negate().darken().css(), for example.
+   * Which is quite nice.
+   */
+  negate: function() {
+    var rgb = this.rgb();
+    var rgbNew = {
+      r: 255 - rgb.r,
+      g: 255 - rgb.g,
+      b: 255 - rgb.b
+    };
+    this.rgb(rgbNew);
+    return this;
+  },
+  lighten: function(ratio) {
+    var hsl = this.hsl();
+    hsl.l += hsl.l * (ratio || 0.5);
+    this._set('hsl', hsl);
+    return this;
+  },
+  darken: function(ratio) {
+    var hsl = this.hsl();
+    hsl.l -= hsl.l * (ratio || 0.5);
+    this._set('hsl', hsl);
+    return this;
+  },
+  saturate: function(ratio) {
+    var hsl = this.hsl();
+    hsl.s += hsl.s * (ratio || 0.5);
+    this._set('hsl', hsl);
+    return this;
+  },
+  desaturate: function(ratio) {
+    var hsl = this.hsl();
+    hsl.s -= hsl.s * (ratio || 0.5);
+    this._set('hsl', hsl);
+    return this;
+  },
+  greyscale: function() {
+    return this.desaturate(1);
+  },
+
+  /*
    * Retrieve the color's base color in a particular format. Converts this.base
    * into the format specified.
    */
@@ -248,9 +295,9 @@ module.exports = {
       }
       return n;
     };
-    hex += pad(color.r.toString(16));
-    hex += pad(color.g.toString(16));
-    hex += pad(color.b.toString(16));
+    hex += pad(Math.round(color.r).toString(16));
+    hex += pad(Math.round(color.g).toString(16));
+    hex += pad(Math.round(color.b).toString(16));
     return hex;
   },
   rgbToHsl: function(color) {
@@ -282,7 +329,7 @@ module.exports = {
     } else {
       s = delta / (2 - max - min);
     }
-    return { h: h, s: s * 100, l: l * 100 };
+    return { h: this.roundNumber(h), s: this.roundNumber(s * 100), l: this.roundNumber(l * 100) };
   },
   rgbToHsv: function(color) {
     var r = color.r,
@@ -312,7 +359,7 @@ module.exports = {
       h += 360;
     }
     v = ((max / 255) * 1000) / 10;
-    return { h: h, s: s, v: v };
+    return { h: this.roundNumber(h), s: this.roundNumber(s), v: this.roundNumber(v) };
   },
   hexToRgb: function(color) {
     if (color === undefined) {
@@ -362,9 +409,9 @@ module.exports = {
       }
       array[i] = val * 255;
     }
-    rgb.r = array[0];
-    rgb.g = array[1];
-    rgb.b = array[2];
+    rgb.r = this.roundNumber(array[0]);
+    rgb.g = this.roundNumber(array[1]);
+    rgb.b = this.roundNumber(array[2]);
     return rgb;
   },
   hsvToRgb: function(color) {
@@ -379,18 +426,21 @@ module.exports = {
     v = 255 * v;
     switch(hi) {
     case 0:
-      return { r: v, g: t, b: p };
+      return { r: this.roundNumber(v), g: this.roundNumber(t), b: this.roundNumber(p) };
     case 1:
-      return { r: q, g: v, b: p };
+      return { r: this.roundNumber(q), g: this.roundNumber(v), b: this.roundNumber(p) };
     case 2:
-      return { r: p, g: v, b: t };
+      return { r: this.roundNumber(p), g: this.roundNumber(v), b: this.roundNumber(t) };
     case 3:
-      return { r: p, g: q, b: v };
+      return { r: this.roundNumber(p), g: this.roundNumber(q), b: this.roundNumber(v) };
     case 4:
-      return { r: t, g: p, b: v };
+      return { r: this.roundNumber(t), g: this.roundNumber(p), b: this.roundNumber(v) };
     case 5:
-      return { r: v, g: p, b: q };
+      return { r: this.roundNumber(v), g: this.roundNumber(p), b: this.roundNumber(q) };
     }
+  },
+  roundNumber: function(num) {
+    return Math.round(num * 10) / 10;
   }
 };
 },{}]},{},[1])
