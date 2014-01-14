@@ -5,7 +5,7 @@
   "homepage": "http://colorama.io",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node_modules/mocha/bin/_mocha --timeout 20000 test/**/*.js"
   },
   "repository": {
     "type": "git",
@@ -27,7 +27,8 @@
     "browserify": "2.18.x",
     "grunt": "0.4.x",
     "grunt-contrib-jshint": "0.6.x",
-    "grunt-contrib-uglify": "0.2.x"
+    "grunt-contrib-uglify": "0.2.x",
+    "mocha": "~1.12.0"
   },
   "licenses": {
     "type": "MIT",
