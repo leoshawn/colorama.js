@@ -48,8 +48,7 @@ function Colorama(color) {
       this._set('hsl', this._parseHslString(color));
     } else if (this._parseNameString(color)) {
       this._set('hex', this._parseNameString(color));
-    }
-      else {
+    } else {
       return false;
     }
     return this;

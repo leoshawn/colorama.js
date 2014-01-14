@@ -30,6 +30,15 @@ module.exports = function(grunt) {
       }
     },
 
+    mochaTest: {
+      test: {
+        options: {
+          reporter: 'spec'
+        },
+        src: ['test/**/*.js']
+      }
+    },
+
     uglify: {
       options: {
         banner: '/*\nColorama v<%= pkg.version %>\n\n' + grunt.file.read('LICENSE') + '\n*/\n'
@@ -53,8 +62,9 @@ module.exports = function(grunt) {
   });
 
   grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-mocha-test');
   grunt.loadNpmTasks('grunt-contrib-uglify');
 
-  grunt.registerTask('default', ['jshint', 'browserify', 'uglify']);
+  grunt.registerTask('default', ['jshint', 'mochaTest', 'browserify', 'uglify']);
 
 };
