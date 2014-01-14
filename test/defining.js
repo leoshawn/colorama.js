@@ -65,25 +65,8 @@ describe('Defining a Colorama object', function() {
     assert.equal(expected.g, result.g);
     assert.equal(expected.b, result.b);
   });
-  it('should add the correct RGB values into the base variable when an RGB string (with percentages) is passed through', function() {
-    var result = Colorama("rgb(100%, 0%, 0%)").base,
-        expected = { r: 255, g: 0, b: 0 };
-    assert.equal(expected.r, result.r);
-    assert.equal(expected.g, result.g);
-    assert.equal(expected.b, result.b);
-  });
   it('should add the correct RGB values into the base variable when a HSL string is passed through', function() {
     var result = Colorama("hsl(0, 100%, 50%)").base,
-        expected = { r: 255, g: 0, b: 0 };
-    assert.equal(expected.r, result.r);
-    assert.equal(expected.g, result.g);
-    assert.equal(expected.b, result.b);
-  });
-});
-
-describe('Using Colorama manipulation functions', function() {
-  it('should return the correct RGB values when rgb() is called', function() {
-    var result = Colorama("#ff0000").rgb(),
         expected = { r: 255, g: 0, b: 0 };
     assert.equal(expected.r, result.r);
     assert.equal(expected.g, result.g);
