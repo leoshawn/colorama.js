@@ -4,7 +4,7 @@
 
 Colorama.js was created after the need for a simpler, more intuitive API for color manipulation. Colorama.js gives developers complete control over color transformations, allowing color palettes and conversions to be accessed with ease.
 
-# Installation
+## Installation
 
 Install colorama.js by either forking this repository or installing through [npm](http://npmjs.org/) (recommended).
 
@@ -12,7 +12,7 @@ Install colorama.js by either forking this repository or installing through [npm
     
 You can also use colorama.js from directly within the browser. Simply include the `colorama.*.js` or `colorama.*.min.js` file to get started!
     
-# Usage
+## Usage
 
 A Colorama object is required to manipulate or convert a color. Defining a new Colorama object is easy:
 
