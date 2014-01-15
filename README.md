@@ -10,7 +10,7 @@ Install colorama.js by either forking this repository or installing through [npm
 
     npm install colorama
     
-You can also use colorama.js from directly within the browser. Simply include the `colorama.*.js` or `colorama.*.min.js` file to get started!
+You can also use colorama.js from directly within the browser. Simply include the `colorama.*.js` or `colorama.*.min.js` file from the 'dist' directory to get started!
     
 ## Usage
 
