@@ -3,13 +3,13 @@
   "version": "1.0.0",
   "description": "A library to aid in color manipulation, conversion and transformation.",
   "homepage": "http://colorama.io",
-  "main": "index.js",
+  "main": "./index.js",
   "scripts": {
     "test": "node_modules/mocha/bin/_mocha --timeout 20000 test/**/*.js"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/dcgauld/colorama.git"
+    "url": "git://github.com/dcgauld/colorama.js.git"
   },
   "keywords": [
     "color",
@@ -33,9 +33,9 @@
   },
   "licenses": {
     "type": "MIT",
-    "url": "https://raw.github.com/dcgauld/colorama/master/LICENSE"
+    "url": "https://raw.github.com/dcgauld/colorama.js/master/LICENSE"
   },
   "bugs": {
-    "url": "https://github.com/dcgauld/colorama/issues"
+    "url": "https://github.com/dcgauld/colorama.js/issues"
   }
 }
