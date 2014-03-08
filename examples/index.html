@@ -18,6 +18,7 @@
     <div id="three"></div>
     <div id="four"></div>
     <div id="five"></div>
+    <div id="six"></div>
     <script>
       var c = Colorama('#00ff88');
       var one = document.getElementById('one');
@@ -31,13 +32,11 @@
       var tetrad = c.tetrad();
       var splitComplement = c.splitComplement();
       var analogous = c.analogous();
-      var monochromatic = c.monochromatic();
 
-      //for (var i = 0; i < 3; i++) { divs[i].style.backgroundColor = triad[i].css(); }
+      for (var i = 0; i < 3; i++) { divs[i].style.backgroundColor = triad[i].css(); }
       //for (var i = 0; i < 4; i++) { divs[i].style.backgroundColor = tetrad[i].css(); }
       //for (var i = 0; i < 3; i++) { divs[i].style.backgroundColor = splitComplement[i].css(); }
       //for (var i = 0; i < 6; i++) { divs[i].style.backgroundColor = analogous[i].css(); }
-      for (var i = 0; i < 6; i++) { divs[i].style.backgroundColor = monochromatic[i].css(); }
     </script>
   </body>
 </html>
