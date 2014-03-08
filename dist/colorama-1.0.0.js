@@ -179,7 +179,7 @@ Colorama.prototype = {
 
   /*
    * Methods for creating a list of colors that are related (sometimes called
-   * palettes). 
+   * palettes).
    */
   triad: function() {
     var hsl = this.hsl();
@@ -214,19 +214,6 @@ Colorama.prototype = {
     for (hsl.h = ((hsl.h - ((360 / slices) * results >> 1)) + 720) % 360; --results;) {
       hsl.h = (hsl.h + (360 / slices)) % 360;
       array.push(new Colorama(hsl));
-    }
-    return array;
-  },
-  // TODO
-  monochromatic: function(results) {
-    results = results || 6;
-    var hsv = this.hsv();
-    var h = hsv.h, s = hsv.s, v = hsv.v;
-    var array = [];
-    var modification = 1 / results;
-    while (results--) {
-      array.push(new Colorama({ h: h, s: s, v: v}));
-      v = (v + modification) % 1;
     }
     return array;
   },
@@ -348,6 +335,7 @@ Colorama.prototype = {
     return Math.min(Math.max(min, num), max);
   }
 };
+
 },{"./conversions":3}],3:[function(require,module,exports){
 'use strict';
 
