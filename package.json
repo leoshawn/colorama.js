@@ -1,6 +1,6 @@
 {
   "name": "colorama",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A library to aid in color manipulation, conversion and transformation.",
   "homepage": "http://colorama.io",
   "main": "./index.js",
